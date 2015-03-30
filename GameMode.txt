@@ -1,0 +1,1 @@
+// stores settings to automatically load for the gamemode, including addons

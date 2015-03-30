@@ -8,4 +8,6 @@
 // #1.0
 exec("./scripts/team.cs");
 exec("./scripts/chat.cs");
-exec("./scripts/weapons.cs");
+exec("./scripts/melee.cs");
+
+exec("./scripts/casting.cs");
