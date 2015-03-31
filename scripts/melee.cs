@@ -1,13 +1,50 @@
-////////////////////////////////////////////////
-// GameMode_dungonsopfdeth/scripts/weapons.cs //
-////////////////////////////////////////////////
+//////////////////////////////////////////////
+// GameMode_dungonsopfdeth/scripts/melee.cs //
+//////////////////////////////////////////////
 
 // table of contents
-// #1.0 prelim stuff
+// #1.0 general melee functionality
 // #2.0 swords
 //    #2.1 copper sword
 
 // #1.0
+
+function DoMeleeStrike(%obj, %slot, %proj, %angle, %range, %damage)
+{
+	%scale = getWord(%obj.getScale(), 2);
+	%start = %obj.getEyePoint();
+	%targets = conalRaycastM(%start, %obj.getMuzzleVector(%slot), %range * %scale, %angle, $Typemasks::PlayerObjectType | $Typemasks::VehicleObjectType, %obj);
+	for(%i = 0; (%hit = getWord(%targets, %i)) !$= ""; %i++)
+	{
+		if(minigameCanDamage(%obj, %hit))
+		{
+			%hit.spawnExplosion(%proj, %scale);
+			%hit.damage(%obj, %hit.getPosition(), %damage, %proj.directDamageType);
+			%hitcount++;
+		}
+	}
+	if(%hitcount < 1)
+	{
+		%typemasks = $Typemasks::VehicleObjectType | $Typemasks::TerrainObjectType | $Typemasks::FXbrickObjectType | $TypeMasks::StaticShapeObjectType;
+		%end = vectorAdd(%start, vectorScale(%obj.getMuzzleVector(%slot), %range * %scale));
+		%raycast = containerRaycast(%start, %end, %typemasks, %obj);
+		if(isObject(%hit = getWord(%raycast, 0)))
+		{
+			%p = new Projectile()
+			{
+				datablock = swordProjectile;
+				initialPosition = posFromRaycast(%raycast);
+				initialVelocity = normalFromRaycast(%raycast);
+				scale = %scale SPC %scale SPC %scale;
+				sourceSlot = %slot;
+				sourceObject = %obj;
+			};
+			%p.explode();
+		}
+	}
+}
+
+// #2.0
 
 datablock AudioProfile(swordDrawSound)
 {
@@ -23,36 +60,34 @@ datablock AudioProfile(swordHitSound)
 	preload = true;
 };
 
-// #2.0
-
 AddDamageType("Sword", '<bitmap:Add-Ons/Weapon_Sword/CI_sword> %1', '%2 <bitmap:Add-Ons/Weapon_Sword/CI_sword> %1', 0.75, 1);
 
 datablock ParticleData(swordExplosionParticle)
 {
-	dragCoefficient= 2;
-	gravityCoefficient = 1.0;
-	inheritedVelFactor = 0.2;
-	constantAcceleration = 0.0;
+	dragCoefficient = 4.5;
+	gravityCoefficient = 3.5;
+	inheritedVelFactor = 0.4;
+	constantAcceleration = 0;
 	spinRandomMin = -90;
 	spinRandomMax = 90;
-	lifetimeMS = 500;
+	lifetimeMS = 350;
 	lifetimeVarianceMS = 300;
 	textureName = "base/data/particles/chunk";
-	colors[0] = "0.88 0.76 0.0 0.9";
-	colors[1] = "0.88 0.76 0.0 0.0";
-	sizes[0] = 0.25;
-	sizes[1] = 0.15;
+	colors[0] = "0.88 0.76 0.0 1.0";
+	colors[1] = "0.88 0.76 0.0 1.0";
+	sizes[0] = 0.1;
+	sizes[1] = 0.0;
 };
 
 datablock ParticleEmitterData(swordExplosionEmitter)
 {
-	ejectionPeriodMS = 6;
+	ejectionPeriodMS = 8;
 	periodVarianceMS = 0;
-	ejectionVelocity = 8;
-	velocityVariance = 1.0;
+	ejectionVelocity = 15;
+	velocityVariance = 7.5;
 	ejectionOffset = 0.0;
 	thetaMin = 0;
-	thetaMax = 60;
+	thetaMax = 50;
 	phiReferenceVel= 0;
 	phiVariance= 360;
 	overrideAdvance = false;
@@ -68,7 +103,7 @@ datablock ExplosionData(swordExplosion)
 	soundProfile = swordHitSound;
 
 	particleEmitter = swordExplosionEmitter;
-	particleDensity = 15;
+	particleDensity = 25;
 	particleRadius = 0.2;
 
 	faceViewer = true;
@@ -209,35 +244,5 @@ function copperSwordImage::onStopFire(%this, %obj, %slot)
 
 function copperSwordImage::onFire(%this, %obj, %slot)
 {
-	%scale = getWord(%obj.getScale(), 2);
-	%start = %obj.getEyePoint();
-	%targets = conalRaycastM(%start, %obj.getMuzzleVector(%slot), 5 * %scale, 45, $Typemasks::PlayerObjectType, %obj);
-	for(%i = 0; (%hit = getWord(%targets, %i)) !$= ""; %i++)
-	{
-		if(minigameCanDamage(%obj, %hit))
-		{
-			%hit.spawnExplosion(swordProjectile, %scale);
-			%hit.damage(%obj, %hit.getPosition(), swordProjectile.directDamage, $DamageType::Sword);
-			%hitcount++;
-		}
-	}
-	if(%hitcount < 1)
-	{
-		%typemasks = $Typemasks::TerrainObjectType | $Typemasks::FXbrickObjectType | $TypeMasks::StaticShapeObjectType;
-		%end = vectorAdd(%start, vectorScale(%obj.getMuzzleVector(%slot), 5 * %scale));
-		%raycast = containerRaycast(%start, %end, %typemasks, %obj);
-		if(isObject(%hit = getWord(%raycast, 0)))
-		{
-			%p = new Projectile()
-			{
-				datablock = swordProjectile;
-				initialPosition = posFromRaycast(%raycast);
-				initialVelocity = normalFromRaycast(%raycast);
-				scale = %scale SPC %scale SPC %scale;
-				sourceSlot = %slot;
-				sourceObject = %obj;
-			};
-			%p.explode();
-		}
-	}
+	DoMeleeStrike(%obj, %slot, %this.projectile, 45, 5, 20);
 }

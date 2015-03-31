@@ -47,9 +47,9 @@ function serverCmdJoinTeam(%client, %team)
 	if(!%client.player.inCombat)
 	{
 		%foundteam = false;
-		for(%i = 0; %i < $dod::Teams; %i++)
+		for(%i = -1; %i < $dod::Teams; %i++)
 		{
-			if(striPos(%team, $dod::Team[%i]) != -1)
+			if(strPos(%team, $dod::Team[%i]) != -1)
 			{
 				%foundteam = true;
 				break;
@@ -59,18 +59,22 @@ function serverCmdJoinTeam(%client, %team)
 		{
 			%i = -1;
 		}
-		if(%i != %client.team)
+		if(%i != %client.dodTeam)
 		{
-			messageAll('', $dod::TeamColor[%client.team] @ %client.name @ "\c7 has joined the " @ $dod::TeamColor[%i] @ $dod::Team[%i] @ "\c7 team.");
-			%client.team = %i;
+			if(%client.dodTeam $= "")
+			{
+				%client.dodTeam = -1;
+			}
+			messageAll('', $dod::TeamColor[%client.dodTeam] @ %client.name @ "\c7 has joined the " @ $dod::TeamColor[%i] @ $dod::Team[%i] @ "\c7 team.");
+			%client.dodTeam = %i;
 			if(isObject(%client.player))
 			{
-				%client.player.setShapeNameColor($dod::TeamColorScript[%client.team]);
+				%client.player.setShapeNameColor($dod::TeamColorScript[%client.dodTeam]);
 			}
 		}
 		else
 		{
-			messageClient(%client, '', "\c0You're already on that team!");
+			messageClient(%client, '', "\c0You're already on the " @ $dod::TeamColor[%i] @ $dodTeam[%i] @ "\c0 team.");
 		}
 	}
 	else
@@ -82,13 +86,13 @@ function serverCmdJoinTeam(%client, %team)
 // #2.2
 function serverCmdLeaveTeam(%client)
 {
-	serverCmdJoinTeam(%client);
+	serverCmdJoinTeam(%client, "White");
 }
 
 // #2.3
 function serverCmdEnablePvp(%client)
 {
-	messageAll('', $dod::TeamColor[%client.team] @ %client.name @ "\c7 has enabled PvP!");
+	messageAll('', $dod::TeamColor[%client.dodTeam] @ %client.name @ "\c7 has enabled PvP!");
 	%client.pvp = true;
 }
 
@@ -97,7 +101,7 @@ function serverCmdDisablePvp(%client)
 {
 	if(!%client.player.inCombat)
 	{
-		messageAll('', $dod::TeamColor[%client.team] @ %client.name @ "\c7 has disabled PvP!");
+		messageAll('', $dod::TeamColor[%client.dodTeam] @ %client.name @ "\c7 has disabled PvP!");
 		%client.pvp = false;
 	}
 	else
@@ -113,8 +117,7 @@ package dodTeams
 	function GameConnection::AutoAdminCheck(%client)
 	{
 		%p = parent::AutoAdminCheck(%client);
-		%client.team = -1;
-		serverCmdJoinTeam(%client, "");
+		serverCmdJoinTeam(%client, "White");
 		return %p;
 	}
 
@@ -122,7 +125,7 @@ package dodTeams
 	function GameConnection::SpawnPlayer(%client)
 	{
 		%p = parent::SpawnPlayer(%client);
-		%client.player.setShapeNameColor($dod::TeamColorScript[%client.team]);
+		%client.player.setShapeNameColor($dod::TeamColorScript[%client.dodTeam]);
 		return %p;
 	}
 
@@ -130,6 +133,7 @@ package dodTeams
 	function minigameCanDamage(%a, %b)
 	{
 		%p = parent::minigameCanDamage(%a, %b);
+		%p1 = %p;
 		if(!%p)
 		{
 			//resolve %a and %b to clients if possible
@@ -144,11 +148,13 @@ package dodTeams
 				}
 				else
 				{
+					announce(%p1 @ " >> [dodTeams package151] >> " @ %p);
 					return %p;
 				}
 			}
 			else
 			{
+				announce(%p1 @ " >> [dodTeams package157] >> " @ %p);
 				return %p;
 			}
 			if(%b.getClassName() $= "GameConnection")
@@ -162,20 +168,24 @@ package dodTeams
 				}
 				else
 				{
+					announce(%p1 @ " >> [dodTeams package171] >> " @ %p);
 					return %p;
 				}
 			}
 			else
 			{
+				announce(%p1 @ " >> [dodTeams package177] >> " @ %p);
 				return %p;
 			}
-			if( (%a.team != %b.team || %a.team == -1 || %b.team == -1 || %a == %b) && %a.pvp && %b.pvp)
+			if( (%a.dodTeam != %b.dodTeam || %a.dodTeam == -1 || %b.dodTeam == -1 || %a == %b) && %a.pvp && %b.pvp)
 			{
+				announce(%p1 @ " >> [dodTeams package182] >> " @ %p);
 				return true;
 			}
 		}
 		else
 		{
+			announce(%p1 @ " >> [dodTeams package188] >> " @ %p);
 			return %p;
 		}
 	}
