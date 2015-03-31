@@ -11,19 +11,20 @@
 //   #2.1 shadowflame
 //   #2.2 twilight
 //   #2.3 mud
+//   #2.4 spirit bom
 
 
 // #1.0
 // #1.1
 datablock AudioProfile(ArcaneBarrage_Loop)
 {
-   filename    = "Add-Ons/Gamemode_Magicks/sounds/ArcaneBarrage_Loop.wav";
+   filename    = "Add-Ons/GameMode_dungonsopfdeth/sounds/ArcaneBarrage_Loop.wav";
    description = AudioCloseLooping3d;
    preload     = true;
 };
 datablock AudioProfile(ArcaneBarrage_Impact)
 {
-   filename    = "Add-Ons/Gamemode_Magicks/sounds/ArcaneBarrage_Impact.wav";
+   filename    = "Add-Ons/GameMode_dungonsopfdeth/sounds/ArcaneBarrage_Impact.wav";
    description = AudioClose3d;
    preload     = true;
 };
@@ -162,7 +163,7 @@ datablock ParticleData(ArcaneExplosionParticle)
 	spinRandomMin = 0;
 	spinRandomMax = 0;
 	useInvAlpha = 0;
-	textureName = "Add-Ons/Gamemode_Magicks/models/Arcane";
+	textureName = "Add-Ons/GameMode_dungonsopfdeth/models/Arcane";
 	colors[0] = "0.8 0.4 1 0.5";
 	colors[1] = "0.8 0.4 1 0.5";
 	colors[2] = "0.8 0.4 1 0.5";
@@ -205,7 +206,7 @@ datablock ParticleData(SparkleParticle)
 	spinRandomMin = 0;
 	spinRandomMax = 0;
 	useInvAlpha = false;
-	textureName = "Add-Ons/Gamemode_Magicks/models/flare";
+	textureName = "Add-Ons/GameMode_dungonsopfdeth/models/flare";
 	colors[0] = "1 0.75 0 1";
 	colors[1] = "1 0.75 0 0";
 	sizes[0] = 0.5;
@@ -259,13 +260,13 @@ datablock ExplosionData(ArcaneExplosion)
 
 datablock AudioProfile(ArcaneMissile_Loop)
 {
-   filename    = "Add-Ons/Gamemode_Magicks/sounds/ArcaneMissile_Loop.wav";
+   filename    = "Add-Ons/GameMode_dungonsopfdeth/sounds/ArcaneMissile_Loop.wav";
    description = AudioCloseLooping3d;
    preload     = true;
 };
 datablock AudioProfile(ArcaneMissile_Impact)
 {
-   filename    = "Add-Ons/Gamemode_Magicks/sounds/ArcaneMissile_Impact.wav";
+   filename    = "Add-Ons/GameMode_dungonsopfdeth/sounds/ArcaneMissile_Impact.wav";
    description = AudioClose3d;
    preload     = true;
 };
@@ -308,7 +309,7 @@ datablock ParticleEmitterData(ArcaneMissileTrailEmitter)
 
 datablock ProjectileData(arcaneMissileProjectileA)
 {
-	projectileShapeName = "Add-Ons/Gamemode_Magicks/models/arcaneMissile.dts";
+	projectileShapeName = "Add-Ons/GameMode_dungonsopfdeth/models/arcaneMissile.dts";
 
 	brickExplosionRadius = 1;
 	brickExplosionImpact = true;
@@ -382,7 +383,7 @@ function arcaneMissileProjectileB::Damage()
 // #2.1
 datablock AudioProfile(Shadowflame_Cast)
 {
-   filename    = "Add-Ons/Gamemode_Magicks/sounds/Shadowflame_Cast.wav";
+   filename    = "Add-Ons/GameMode_dungonsopfdeth/sounds/Shadowflame_Cast.wav";
    description = AudioClose3d;
    preload     = true;
 };
@@ -459,7 +460,7 @@ datablock ShapeBaseImageData(ShadowflameBreathImage)
 
 datablock AudioProfile(Shadow_Loop)
 {
-   filename    = "Add-Ons/Gamemode_Magicks/sounds/Shadow_Loop.wav";
+   filename    = "Add-Ons/GameMode_dungonsopfdeth/sounds/Shadow_Loop.wav";
    description = AudioCloseLooping3d;
    preload     = true;
 };
@@ -467,7 +468,7 @@ datablock AudioProfile(Shadow_Loop)
 // #2.2
 datablock AudioProfile(Twilight_Impact)
 {
-   filename    = "Add-Ons/Gamemode_Magicks/sounds/Twilight_Impact.wav";
+   filename    = "Add-Ons/GameMode_dungonsopfdeth/sounds/Twilight_Impact.wav";
    description = AudioClose3d;
    preload     = true;
 };
@@ -573,7 +574,7 @@ function TwilightBoltProjectile::onCollision(%this, %obj, %col, %fade, %pos, %no
 
 datablock AudioProfile(Stone_Impact)
 {
-   filename    = "Add-Ons/Gamemode_Magicks/sounds/Stone_Impact.wav";
+   filename    = "Add-Ons/GameMode_dungonsopfdeth/sounds/Stone_Impact.wav";
    description = AudioDefault3d;
    preload     = true;
 };
@@ -769,5 +770,177 @@ function MudProjectile::onExplode(%this, %obj, %pos, %fade)
 				tiny = getRandom(0, 1);
 			};
 		}
+	}
+}
+
+// #2.4
+
+datablock AudioProfile(Shadow_Impact)
+{
+   filename    = "Add-Ons/GameMode_dungonsopfdeth/sounds/Shadow_Impact.wav";
+   description = AudioDefault3d;
+   preload     = true;
+};
+
+datablock ParticleData(spiritBombParticle)
+{
+	dragCoefficient = 0;
+	windCoefficient = 0;
+	gravityCoefficient = 0;
+	inheritedVelFactor = 0;
+	constantAcceleration = 0;
+	lifetimeMS = 100;
+	lifetimeVarianceMS = 15;
+	spinSpeed = 0;
+	spinRandomMin = -90;
+	spinRandomMax = 90;
+	useInvAlpha = false;
+	textureName = "base/data/particles/dot";
+	animTexName[0] = "base/data/particles/dot";
+	colors[0] = "0.5 0.5 0.5 0.5";
+	colors[1] = "0.8 0.7 0.6 0.5";
+	colors[2] = "1.0 0.1 0.1 0.5";
+	colors[3] = "1.0 1.0 1.0 1.0";
+	sizes[0] = 0.2;
+	sizes[1] = 0.9;
+	sizes[2] = 0.3;
+	sizes[3] = 1;
+	times[0] = 0;
+	times[1] = 0.2;
+	times[2] = 1;
+	times[3] = 2;
+};
+
+datablock ParticleEmitterData(spiritBombEmitter)
+{
+   ejectionPeriodMS = 12;
+   periodVarianceMS = 0;
+   ejectionVelocity = 0;
+   velocityVariance = 0;
+   ejectionOffset = 0;
+   thetaMin = 0;
+   thetaMax = 0;
+   phiReferenceVel = 0;
+   phiVariance = 360;
+   overrideAdvance = 0;
+   orientParticles = 0;
+   orientOnVelocity = 1;
+   particles = "spiritBombParticle";
+   lifetimeMS = 0;
+   lifetimeVarianceMS = 0;
+   useEmitterSizes = false;
+   useEmitterColors = false;
+   uiName = "Spirit Bomb";
+};
+
+datablock ParticleData(spiritBombExplosionParticle)
+{
+	dragCoefficient = 0;
+	windCoefficient = 0;
+	gravityCoefficient = 0;
+	inheritedVelFactor = 0;
+	constantAcceleration = -5;
+	lifetimeMS = 700;
+	lifetimeVarianceMS = 100;
+	spinSpeed = 0;
+	spinRandomMin = -90;
+	spinRandomMax = 90;
+	useInvAlpha = false;
+	textureName = "base/data/particles/thinRing";
+	colors[0] = "1 0.8 0.7 0";
+	colors[1] = "1 0.7 0.6 0.8";
+	colors[2] = "1 0.6 0.5 0.7";
+	sizes[0] = 2;
+	sizes[1] = 1.5;
+	sizes[2] = 0.5;
+	sizes[3] = 1;
+	times[0] = 0;
+	times[1] = 0.2;
+	times[2] = 1;
+};
+
+datablock ParticleEmitterData(spiritBombExplosionEmitter)
+{
+	ejectionPeriodMS = 3;
+	periodVarianceMS = 0;
+	ejectionVelocity = 5;
+	velocityVariance = 0;
+	ejectionOffset = 3.3;
+	thetaMin = 85;
+	thetaMax = 95;
+	phiReferenceVel = 0;
+	phiVariance = 360;
+	particles = "spiritBombExplosionParticle";
+	useEmitterSizes = false;
+	useEmitterColors = false;
+	uiName = "Spirit Bomb Explosion";
+};
+
+datablock ExplosionData(spiritBombExplosion)
+{
+	soundProfile = Shadow_Impact;
+
+	lifeTimeMS = 500;
+
+	//particleEmitter = spiritBombExplosionEmitter;
+	//particleDensity = 20;
+	//particleRadius = 3.3;
+
+	emitter[0] = spiritBombExplosionEmitter;
+
+	faceViewer = true;
+	explosionScale = "1 1 1";
+
+	shakeCamera = false;
+	camShakeFreq = "10 11 10";
+	camShakeAmp = "1 1 1";
+	camShakeDuration = 0.5;
+	camShakeRadius = 10.0;
+
+	lightStartRadius = 8;
+	lightEndRadius = 5;
+	lightStartColor = "0.7 0.6 0.5";
+	lightEndColor = "0 0 0";
+};
+
+datablock ProjectileData(spiritBombProjectile)
+{
+	projectileShapeName = "base/data/shapes/empty.dts";
+
+	brickExplosionRadius = 3;
+	brickExplosionImpact = true;
+	brickExplosionForce = 30;
+	brickExplosionMaxVolume = 30;
+	brickExplosionMaxVolumeFloating = 60;
+
+	impactImpulse = 400;
+	verticalImpulse = 200;
+	explosion = spiritBombExplosion;
+	sound = Shadow_Loop;
+	particleEmitter = spiritBombEmitter;
+
+	muzzleVelocity = 10;
+	velInheritFactor = 0;
+
+	armingDelay = 0;
+	lifetime = 8000;
+	fadeDelay = 7500;
+	bounceElasticity = 0.999;
+	bounceFriction = 0.001;
+	isBallistic = false;
+	gravityMod = 0;
+
+	hasLight = true;
+	lightRadius = 2;
+	lightColor = "0.7 0.6 0.5";
+
+	uiName = "Spirit Bomb";
+};
+
+function spiritBombProjectile::onCollision(%this, %obj, %col, %fade, %pos, %normal)
+{
+	if(minigameCanDamage(%obj.sourceObject, %hit))
+	{
+		%hit.schedule(500, damage, %obj.sourceObject, %pos, %obj.damage, $DamageType::Direct);
 	}
 }

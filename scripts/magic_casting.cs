@@ -5,13 +5,8 @@
 ////////////
 //CONTENTS//
 ////////////
-//#1. Functionality
-//	#1.1 Package starts
-//	#1.2 armor::onTrigger
-//	#1.3 Package ends
-//	#1.4 conal raycasts
-//	#1.5 player::Blind
-//	#1.6 getVectorAngle
+//#1. Package
+//	#1.1 armor::onTrigger
 //#2. Spell casts
 //   #2.1 Shadowflame
 //   #2.2 Arcane Barrage
@@ -25,10 +20,9 @@
 //   #2.10 Disruption
 
 //#1.
-//	#1.1
 package Magicks_Casting
 {
-	//	#1.2
+	//	#1.1
 	function armor::onTrigger(%this, %obj, %slot, %val)
 	{
 		if(%slot == 0 && %val)
@@ -37,12 +31,13 @@ package Magicks_Casting
 			{
 				if(%tok = strLen(%client.tokens))
 				{
-					if(isFunction(%fn = strReplace($SpellName[%client.tokens], " ", "")))
+					%bitmask = getTokenBitmask(%client.tokens);
+					if(isFunction(%fn = strReplace($Spell[%bitmask], " ", "")))
 					{
 						if(getSimTime() > %obj.GCD)
 						{
 							%manaCost = %tok * 15 + (%tok > 2 ? 15 : 0);
-							if((%lev = %obj.getEnergyLevel()) >= %manaCost)
+							if((%mana = %obj.getEnergyLevel()) >= %manaCost)
 							{
 								%result = call(%fn, %obj);
 								if(%result != 1)
@@ -54,7 +49,7 @@ package Magicks_Casting
 							}
 							else
 							{
-								%client.centerPrint("Not enough mana!<br>" @ mFloatLength(%lev, 0) @ "/" @ %manaCost, 1);
+								%client.centerPrint("Not enough mana!<br>" @ mFloatLength(%mana, 0) @ "/" @ %manaCost, 1);
 							}
 						}
 						else
@@ -73,90 +68,7 @@ package Magicks_Casting
 		parent::onTrigger(%this, %obj, %slot, %val);
 	}
 };
-//	#1.3
 activatePackage(Magicks_Casting);
-//	#1.4
-function conalRaycast(%center, %forwardVector, %radius, %angle, %typemasks, %exclude)
-{
-	InitContainerRadiusSearch(%center, %radius, %typemasks);
-	while(%hit = containerSearchNext())
-	{
-		if(%hit == %exclude)
-		{
-			continue;
-		}
-		%vec1 = vectorNormalize(VectorSub(strPos(%hit.getClassName(), "Player") != -1 ? %hit.getHackPosition() : %hit.getPosition(), %center));
-		%vec2 = %forwardVector;
-		%ang1 = getVectorAngle(%vec2, %vec1);
-		if(%ang1 <= %angle)
-		{
-			break;
-		}
-	}
-	if(isObject(%hit))
-	{
-		%raycast = containerRaycast(%center, strPos(%hit.getClassName(), "Player") != -1 ? %hit.getHackPosition() : %hit.getPosition(), %typemasks, %exclude);
-	}
-	return setWord(%raycast, 0, %hit);
-}
-function conalRaycastM(%center, %forwardVector, %radius, %angle, %typemasks, %exclude)
-{
-	InitContainerRadiusSearch(%center, %radius, %typemasks);
-	while(%hit = containerSearchNext())
-	{
-		if(%hit == %exclude)
-		{
-			continue;
-		}
-		%vec1 = vectorNormalize(VectorSub(strPos(%hit.getClassName(), "Player") != -1 ? %hit.getHackPosition() : %hit.getPosition(), %center));
-		%vec2 = %forwardVector;
-		%ang1 = getVectorAngle(%vec2, %vec1);
-		if(%ang1 <= %angle)
-		{
-			%list = %list SPC %hit;
-		}
-	}
-	return trim(%list);
-}
-
-//	#1.5
-function DarkBlindPlayerImage::onMount(%this, %obj, %slot)
-{
-	serverPlay3d(DarkBlindSound, %obj.getEyePoint());
-	parent::onMount(%this, %obj, %slot);
-}
-function DarkBlindPlayerImage::Dismount(%this, %obj, %slot)
-{
-}
-
-function Player::Blind(%this, %dur, %dr)
-{
-	if(%this.BlindDR < 3 && %dr)
-	{
-		%this.mountImage(DarkBlindPlayerImage, 1);
-		%duration = %dur / (%dr ? mClamp(%this.BlindDR + 1, 1, 4) : 1);
-		%this.BlindDR++;
-		%this.schedule(%duration, unmountImage, 1);
-		if(!isEventPending(%this.BlindDRclear))
-		{
-			%this.BlindDRclear = %this.schedule(15000 + %duration, BlindDRdec);
-		}
-	}
-}
-
-//	#1.6
-function getVectorAngle(%vec1, %vec2) //http://www.torquepowered.com/community/forums/viewthread/12632/1#comment-596037
-{
-	%vec1n = VectorNormalize(%vec1);
-	%vec2n = VectorNormalize(%vec2);
-
-	%vdot = VectorDot(%vec1n, %vec2n);
-	%angle = mACos(%vdot);
-
-	// convert to degrees and return
-	%degangle = mRadToDeg(%angle);
-	return %degangle;
-}
 
 //#2
 //	#2.1
@@ -468,14 +380,14 @@ function StoneShield(%caster)
 		%color = strLen(%color) ? %color : getClosestPaintColor("0.35 0.15 0 1");
 		%angleID = getAngleIDfromPlayer(%caster);
 		%pos = vectorAdd(posFromRaycast(%ray), "0 0 0.9");
-		InitContainerRadiusSearch(%pos, 2, $TypeMasks::PlayerObjectType);
-		while(%hit = containerSearchNext())
-		{
-			if(minigameCanDamage(%caster, %hit))
-			{
-				%hit.damage(%caster, %pos, 20, $DamageType::Direct);
-			}
-		}
+		//InitContainerRadiusSearch(%pos, 2, $TypeMasks::PlayerObjectType);
+		//while(%hit = containerSearchNext())
+		//{
+			//if(minigameCanDamage(%caster, %hit))
+			//{
+				//%hit.damage(%caster, %pos, 20, $DamageType::Direct);
+			//}
+		//}
 		for(%i = 0; %i < 2; %i++)
 		{
 			%brick = new FxDTSbrick()
@@ -543,6 +455,23 @@ function Disruption(%caster)
 		huge = true;
 		tiny = false;
 	};
-	%p.dump();
 	%p.schedule(1000, explode);
+}
+
+// #2.11
+
+function SpiritBomb(%caster)
+{
+	%pos = %caster.getEyePoint();
+	%vel = vectorScale(%caster.getEyeVector(), 10);
+	%p = new Projectile()
+	{
+		datablock = spiritBombProjectile;
+		initialPosition = %pos;
+		initialVelocity = %vel;
+		sourceObject = %caster;
+		sourceSlot = 0;
+		scale = "1 1 1";
+		damage = 30 + %caster.getEnergyLevel() / 2;
+	};
 }

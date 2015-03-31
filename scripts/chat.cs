@@ -11,5 +11,5 @@
 // #1.1
 function serverCmdMessageSent(%client, %message)
 {
-	messageAll('', $dod::TeamColor[%client.team] @ %client.name @ "<color:ffffff>: " @ %message);
+	messageAll('', $dod::TeamColor[%client.dodteam] @ %client.name @ "<color:ffffff>: " @ %message);
 }

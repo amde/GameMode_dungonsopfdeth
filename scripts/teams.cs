@@ -133,7 +133,6 @@ package dodTeams
 	function minigameCanDamage(%a, %b)
 	{
 		%p = parent::minigameCanDamage(%a, %b);
-		%p1 = %p;
 		if(!%p)
 		{
 			//resolve %a and %b to clients if possible
@@ -148,13 +147,11 @@ package dodTeams
 				}
 				else
 				{
-					announce(%p1 @ " >> [dodTeams package151] >> " @ %p);
 					return %p;
 				}
 			}
 			else
 			{
-				announce(%p1 @ " >> [dodTeams package157] >> " @ %p);
 				return %p;
 			}
 			if(%b.getClassName() $= "GameConnection")
@@ -168,24 +165,20 @@ package dodTeams
 				}
 				else
 				{
-					announce(%p1 @ " >> [dodTeams package171] >> " @ %p);
 					return %p;
 				}
 			}
 			else
 			{
-				announce(%p1 @ " >> [dodTeams package177] >> " @ %p);
 				return %p;
 			}
 			if( (%a.dodTeam != %b.dodTeam || %a.dodTeam == -1 || %b.dodTeam == -1 || %a == %b) && %a.pvp && %b.pvp)
 			{
-				announce(%p1 @ " >> [dodTeams package182] >> " @ %p);
 				return true;
 			}
 		}
 		else
 		{
-			announce(%p1 @ " >> [dodTeams package188] >> " @ %p);
 			return %p;
 		}
 	}

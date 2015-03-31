@@ -44,4 +44,4 @@ $EnvGuiServer::GroundFile Add-Ons/Ground_Plate/plate.ground
 $MiniGame::Enabled 0
 
 //config settings
-$Server::WelcomeMessage \c2Welcome to the dungons... opf deth..., %1.
+$Server::WelcomeMessage \c2Welcome, %1, to the dungons... opf deth...
