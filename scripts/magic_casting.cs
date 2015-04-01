@@ -462,8 +462,8 @@ function Disruption(%caster)
 
 function SpiritBomb(%caster)
 {
-	%pos = %caster.getEyePoint();
-	%vel = vectorScale(%caster.getEyeVector(), 10);
+	%pos = vectorAdd(%caster.getEyePoint(), %caster.getEyeVector());
+	%vel = vectorScale(%caster.getEyeVector(), 15);
 	%p = new Projectile()
 	{
 		datablock = spiritBombProjectile;

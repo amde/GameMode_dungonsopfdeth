@@ -61,7 +61,7 @@ function GameConnection::DisplayTokens(%this)
 	%bitmask = getTokenBitmask(%this.tokens);
 	if(%len == 0)
 	{
-		%this.bottomPrint("\c6No tokens");
+		%this.bottomPrint("\c6No tokens", 5);
 		return;
 	}
 	for(%i = 0; %i < %len; %i++)
@@ -83,7 +83,7 @@ function GameConnection::DisplayTokens(%this)
 	%name = $Spell[%bitmask];
 	%str = %str @ "\c6: " @ (strLen(%name) ? %name : "???");
 	%str = %str @ "   <font:Courier New:14>\c6Bitmask: " @ %bitmask;
-	%this.bottomPrint(%str);
+	%this.bottomPrint(%str, 30);
 }
 
 //#2.0
@@ -212,6 +212,7 @@ datablock fxDTSBrickData(NullToken)
 function NullToken::onUse(%this, %obj, %slot)
 {
 	%obj.client.tokens = "";
+	%obj.client.displayTokens();
 }
 
 //#2.

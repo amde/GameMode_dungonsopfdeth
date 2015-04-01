@@ -3,16 +3,17 @@
 //////////////////////////////////////////////
 
 // table of contents
-// #1.0 global vars
-// #2.0 new functions
-//   #2.1 serverCmdJoinTeam
-//   #2.2 serverCmdLeaveTeam
-//   #2.3 serverCmdEnablePvp
-//   #2.4 serverCmdDisablePvp
-// #3.0 dodTeams package
+// #1. global vars
+// #2. new functions
+//   #2.1 server commands for joining/leaving a team
+//   #2.2 server commands for enabling/disabling pvp
+// #3. dodTeams package
 //   #3.1 gameConnection::autoAdminCheck
 //	#3.2 gameConnection::spawnPlayer
 //   #3.3 minigameCanDamage
+// #4. function overwrites
+//   #4.1 serverCmdMessageSent
+//   #4.2 serverCmdTeamMessageSent
 
 
 // #1.0
@@ -39,7 +40,7 @@ $dod::Team[5]="Cyan";
 $dod::TeamColor[5]="<color:00FFFF>";
 $dod::TeamColorScript[5]="0 1 1";
 
-// #2.0
+// #2.
 
 // #2.1
 function serverCmdJoinTeam(%client, %team)
@@ -49,7 +50,7 @@ function serverCmdJoinTeam(%client, %team)
 		%foundteam = false;
 		for(%i = -1; %i < $dod::Teams; %i++)
 		{
-			if(strPos(%team, $dod::Team[%i]) != -1)
+			if(strPos($dod::Team[%i], %team) != -1)
 			{
 				%foundteam = true;
 				break;
@@ -67,6 +68,7 @@ function serverCmdJoinTeam(%client, %team)
 			}
 			messageAll('', $dod::TeamColor[%client.dodTeam] @ %client.name @ "\c7 has joined the " @ $dod::TeamColor[%i] @ $dod::Team[%i] @ "\c7 team.");
 			%client.dodTeam = %i;
+			%client.dodAccount.dodTeam = %i;
 			if(isObject(%client.player))
 			{
 				%client.player.setShapeNameColor($dod::TeamColorScript[%client.dodTeam]);
@@ -83,20 +85,18 @@ function serverCmdJoinTeam(%client, %team)
 	}
 }
 
-// #2.2
 function serverCmdLeaveTeam(%client)
 {
 	serverCmdJoinTeam(%client, "White");
 }
 
-// #2.3
+// #2.2
 function serverCmdEnablePvp(%client)
 {
 	messageAll('', $dod::TeamColor[%client.dodTeam] @ %client.name @ "\c7 has enabled PvP!");
 	%client.pvp = true;
 }
 
-// #2.4
 function serverCmdDisablePvp(%client)
 {
 	if(!%client.player.inCombat)
@@ -107,6 +107,18 @@ function serverCmdDisablePvp(%client)
 	else
 	{
 		messageClient(%client, '', "\c0Not while you're in combat!");
+	}
+}
+
+function serverCmdTogglePvp(%client)
+{
+	if(%client.pvp)
+	{
+		serverCmdDisablePvp(%client);
+	}
+	else
+	{
+		serverCmdEnablePvp(%client);
 	}
 }
 
@@ -184,3 +196,28 @@ package dodTeams
 	}
 };
 activatePackage(dodTeams);
+
+// #4.
+// #4.1
+function serverCmdMessageSent(%client, %message)
+{
+	messageAll('', "\c7" @ %client.clanPrefix @ $dod::TeamColor[%client.dodteam] @ %client.name @ "\c7" @ %client.clanPrefix @ "<color:ffffff>: " @ %message);
+}
+
+// #4.2
+function serverCmdTeamMessageSent(%client, %message)
+{
+	if(%client.dodTeam == -1)
+	{
+		messageClient(%client, '', "\c0You can't use team chat while you're on the White team!");
+		return;
+	}
+	for(%i = 0; %i < clientGroup.getCount(); %i++)
+	{
+		%c = clientGroup.getObject(%i);
+		if(%c.dodTeam == %client.dodTeam)
+		{
+			messageClient(%client, '', $dod::TeamColor[%client.dodTeam] @ "[TEAM]\c7" @ %client.clanPrefix @ $dod::TeamColor[%client.dodTeam] @ %client.getPlayerName() @ "\c7" @ %client.clanSuffix @ "<color:FFFFFF>:" @ %message);
+		}
+	}
+}

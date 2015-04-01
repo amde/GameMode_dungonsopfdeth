@@ -12,7 +12,6 @@ exec("./scripts/geometry.cs");
 
 //pseudo-minigame
 //exec("./scripts/team.cs");
-//exec("./scripts/chat.cs");
 
 //weapon systems
 exec("./scripts/melee.cs");
