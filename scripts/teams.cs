@@ -126,12 +126,12 @@ function serverCmdTogglePvp(%client)
 package dodTeams
 {
 	// #3.1
-	function GameConnection::AutoAdminCheck(%client)
-	{
-		%p = parent::AutoAdminCheck(%client);
-		serverCmdJoinTeam(%client, "White");
-		return %p;
-	}
+	//function GameConnection::AutoAdminCheck(%client)
+	//{
+		//%p = parent::AutoAdminCheck(%client);
+		//serverCmdJoinTeam(%client, "White");
+		//return %p;
+	//}
 
 	// #3.2
 	function GameConnection::SpawnPlayer(%client)
@@ -201,7 +201,7 @@ activatePackage(dodTeams);
 // #4.1
 function serverCmdMessageSent(%client, %message)
 {
-	messageAll('', "\c7" @ %client.clanPrefix @ $dod::TeamColor[%client.dodteam] @ %client.name @ "\c7" @ %client.clanPrefix @ "<color:ffffff>: " @ %message);
+	messageAll('', "\c7" @ %client.clanPrefix @ $dod::TeamColor[%client.dodteam] @ %client.name @ "\c7" @ %client.clanSuffix @ "<color:ffffff>: " @ %message);
 }
 
 // #4.2

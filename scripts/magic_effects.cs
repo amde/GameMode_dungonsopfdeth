@@ -83,6 +83,112 @@ datablock ParticleEmitterData(ArcaneBarrageEmitterB : ArcaneBarrageEmitterA)
 	uiName = "Arcane Barrage B";
 };
 
+datablock ParticleData(ArcaneExplosionParticle)
+{
+	dragCoefficient = 10;
+	windCoefficient = 0;
+	gravityCoefficient = 0;
+	inheritedVelFactor = 0.2;
+	constantAcceleration = 0.5;
+	lifetimeMS = 100;
+	lifetimeVarianceMS = 0;
+	spinSpeed = 0;
+	spinRandomMin = 0;
+	spinRandomMax = 0;
+	useInvAlpha = 0;
+	textureName = "Add-Ons/GameMode_dungonsopfdeth/models/Arcane";
+	colors[0] = "0.8 0.4 1 0.5";
+	colors[1] = "0.8 0.4 1 0.5";
+	colors[2] = "0.8 0.4 1 0.5";
+	sizes[0] = 4.9;
+	sizes[1] = 5;
+	sizes[2] = 4.9;
+	times[0] = 0;
+	times[1] = 0.5;
+	times[2] = 1;
+};
+datablock ParticleEmitterData(ArcaneExplosionEmitter)
+{
+	ejectionPeriodMS = 30;
+	periodVarianceMS = 0;
+	ejectionVelocity = 0.5;
+	velocityVariance = 0.3;
+	ejectionOffset = 0;
+	thetaMin = 0;
+	thetaMax = 180;
+	phiReferenceVel = 0;
+	phiVariance = 360;
+	overrideAdvance = 0;
+	orientParticles = 0;
+	orientOnVelocity = 1;
+	particles = "ArcaneExplosionParticle";
+	uiName = "Arcane Explosion";
+};
+
+
+datablock ParticleData(SparkleParticle)
+{
+	dragCoefficient = 10;
+	windCoefficient = 0;
+	gravityCoefficient = 0.1;
+	inheritedVelFactor = 0;
+	constantAcceleration = 0;
+	lifetimeMS = 1000;
+	lifetimeVarianceMS = 250;
+	spinSpeed = 0;
+	spinRandomMin = 0;
+	spinRandomMax = 0;
+	useInvAlpha = false;
+	textureName = "Add-Ons/GameMode_dungonsopfdeth/models/flare";
+	colors[0] = "1 0.75 0 1";
+	colors[1] = "1 0.75 0 0";
+	sizes[0] = 0.5;
+	sizes[1] = 0;
+	times[0] = 0;
+	times[1] = 1;
+};
+datablock ParticleEmitterData(SparkleEmitter)
+{
+	ejectionPeriodMS = 20;
+	periodVarianceMS = 10;
+	ejectionVelocity = 5;
+	velocityVariance = 3;
+	ejectionOffset = 0;
+	thetaMin = 0;
+	thetaMax = 180;
+	phiReferenceVel = 0;
+	phiVariance = 360;
+	particles = "SparkleParticle";
+	uiName = "Sparkles";
+};
+
+datablock ExplosionData(ArcaneExplosion)
+{
+	//soundProfile = "";
+
+	lifeTimeMS = 300;
+
+	particleEmitter = SparkleEmitter;
+	particleDensity = 20;
+	particleRadius = 1;
+
+	emitter[0] = ArcaneExplosionEmitter;
+
+	faceViewer = true;
+	explosionScale = "1 1 1";
+
+	shakeCamera = false;
+	camShakeFreq = "10 11 10";
+	camShakeAmp = "1 1 1";
+	camShakeDuration = 0.5;
+	camShakeRadius = 10.0;
+
+	lightStartRadius = 5;
+	lightEndRadius = 0;
+	lightStartColor = "0.8 0.4 1";
+	lightEndColor = "0.8 0.1 1";
+};
+
 datablock ProjectileData(arcaneBarrageProjectileA)
 {
 	projectileShapeName = "base/data/shapes/empty.dts";
@@ -150,113 +256,8 @@ function arcaneBarrageProjectileB::Damage()
 }
 
 // #1.2
-datablock ParticleData(ArcaneExplosionParticle)
-{
-	dragCoefficient = 10;
-	windCoefficient = 0;
-	gravityCoefficient = 0;
-	inheritedVelFactor = 0.2;
-	constantAcceleration = 0.5;
-	lifetimeMS = 100;
-	lifetimeVarianceMS = 0;
-	spinSpeed = 0;
-	spinRandomMin = 0;
-	spinRandomMax = 0;
-	useInvAlpha = 0;
-	textureName = "Add-Ons/GameMode_dungonsopfdeth/models/Arcane";
-	colors[0] = "0.8 0.4 1 0.5";
-	colors[1] = "0.8 0.4 1 0.5";
-	colors[2] = "0.8 0.4 1 0.5";
-	sizes[0] = 4.9;
-	sizes[1] = 5;
-	sizes[2] = 4.9;
-	times[0] = 0;
-	times[1] = 0.5;
-	times[2] = 1;
-};
-datablock ParticleEmitterData(ArcaneExplosionEmitter)
-{
-	ejectionPeriodMS = 30;
-	periodVarianceMS = 0;
-	ejectionVelocity = 0.5;
-	velocityVariance = 0.3;
-	ejectionOffset = 0;
-	thetaMin = 0;
-	thetaMax = 180;
-	phiReferenceVel = 0;
-	phiVariance = 360;
-	overrideAdvance = 0;
-	orientParticles = 0;
-	orientOnVelocity = 1;
-	particles = "ArcaneExplosionParticle";
-	uiName = "Arcane Explosion";
-};
 
 // #1.3
-datablock ParticleData(SparkleParticle)
-{
-	dragCoefficient = 10;
-	windCoefficient = 0;
-	gravityCoefficient = 0.1;
-	inheritedVelFactor = 0;
-	constantAcceleration = 0;
-	lifetimeMS = 1000;
-	lifetimeVarianceMS = 250;
-	spinSpeed = 0;
-	spinRandomMin = 0;
-	spinRandomMax = 0;
-	useInvAlpha = false;
-	textureName = "Add-Ons/GameMode_dungonsopfdeth/models/flare";
-	colors[0] = "1 0.75 0 1";
-	colors[1] = "1 0.75 0 0";
-	sizes[0] = 0.5;
-	sizes[1] = 0;
-	times[0] = 0;
-	times[1] = 1;
-};
-datablock ParticleEmitterData(SparkleEmitter)
-{
-	ejectionPeriodMS = 20;
-	periodVarianceMS = 10;
-	ejectionVelocity = 5;
-	velocityVariance = 3;
-	ejectionOffset = 0;
-	thetaMin = 0;
-	thetaMax = 180;
-	phiReferenceVel = 0;
-	phiVariance = 360;
-	particles = "SparkleParticle";
-	uiName = "Sparkles";
-};
-
-datablock ExplosionData(ArcaneExplosion)
-{
-	//soundProfile = "";
-
-	lifeTimeMS = 300;
-
-	particleEmitter = SparkleEmitter;
-	particleDensity = 20;
-	particleRadius = 1;
-
-	emitter[0] = ArcaneExplosionEmitter;
-
-	faceViewer = true;
-	explosionScale = "1 1 1";
-
-	shakeCamera = false;
-	camShakeFreq = "10 11 10";
-	camShakeAmp = "1 1 1";
-	camShakeDuration = 0.5;
-	camShakeRadius = 10.0;
-
-	lightStartRadius = 5;
-	lightEndRadius = 0;
-	lightStartColor = "0.8 0.4 1";
-	lightEndColor = "0.8 0.1 1";
-};
-
-
 
 datablock AudioProfile(ArcaneMissile_Loop)
 {

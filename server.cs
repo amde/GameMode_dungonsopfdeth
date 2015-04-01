@@ -10,8 +10,11 @@
 //support functions
 exec("./scripts/geometry.cs");
 
+//rpg
+exec("./scripts/persistence.cs");
+
 //pseudo-minigame
-//exec("./scripts/team.cs");
+exec("./scripts/teams.cs");
 
 //weapon systems
 exec("./scripts/melee.cs");
