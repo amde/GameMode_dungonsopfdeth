@@ -3,14 +3,22 @@
 //////////////////////////////////////////////
 
 // table of contents
-// #1.0 general melee functionality
-// #2.0 swords
+// #1. general melee functionality
+// #2. swords
 //    #2.1 copper sword
+// #4. hammers
+//    #4.1 blacksmith's hammer
 
 // #1.0
 
-function DoMeleeStrike(%obj, %slot, %proj, %angle, %range, %damage)
+function DoMeleeStrike(%obj, %slot, %angle, %range, %damage, %proj, %sound)
 {
+	if(isObject(%acc = %obj.client.dodAccount))
+	{
+		%angle *= (1 + %acc.mastery / 100);
+		%range *= (1 + %acc.range / 100);
+		%damage *= (1 + %acc.damage / 100);
+	}
 	%scale = getWord(%obj.getScale(), 2);
 	%start = %obj.getEyePoint();
 	%targets = conalRaycastM(%start, %obj.getMuzzleVector(%slot), %range * %scale, %angle, $Typemasks::PlayerObjectType | $Typemasks::VehicleObjectType, %obj);
@@ -18,7 +26,14 @@ function DoMeleeStrike(%obj, %slot, %proj, %angle, %range, %damage)
 	{
 		if(minigameCanDamage(%obj, %hit))
 		{
-			%hit.spawnExplosion(%proj, %scale);
+			if(isObject(%proj))
+			{
+				%hit.spawnExplosion(%proj, %scale);
+			}
+			if(isObject(%sound))
+			{
+				serverPlay3D(%sound, %hit.getPosition());
+			}
 			%hit.damage(%obj, %hit.getPosition(), %damage, %proj.directDamageType);
 			%hitcount++;
 		}
@@ -30,16 +45,23 @@ function DoMeleeStrike(%obj, %slot, %proj, %angle, %range, %damage)
 		%raycast = containerRaycast(%start, %end, %typemasks, %obj);
 		if(isObject(%hit = getWord(%raycast, 0)))
 		{
-			%p = new Projectile()
+			if(isObject(%proj))
 			{
-				datablock = swordProjectile;
-				initialPosition = posFromRaycast(%raycast);
-				initialVelocity = normalFromRaycast(%raycast);
-				scale = %scale SPC %scale SPC %scale;
-				sourceSlot = %slot;
-				sourceObject = %obj;
-			};
-			%p.explode();
+				%p = new Projectile()
+				{
+					datablock = %proj;
+					initialPosition = posFromRaycast(%raycast);
+					initialVelocity = normalFromRaycast(%raycast);
+					scale = %scale SPC %scale SPC %scale;
+					sourceSlot = %slot;
+					sourceObject = %obj;
+				};
+				%p.explode();
+			}
+			if(isObject(%sound))
+			{
+				serverPlay3D(%sound, posFromRaycast(%raycast));
+			}
 		}
 	}
 }
@@ -167,6 +189,14 @@ datablock ItemData(copperSwordItem)
 
 	image = copperSwordImage;
 	canDrop = true;
+
+	//dod stuff
+	dodItem = true;
+	//base stats
+	damage = 15;
+	range = 5;
+	mastery = 15; //cone angle
+	potential = 0;
 };
 
 datablock ShapeBaseImageData(copperSwordImage)
@@ -179,7 +209,8 @@ datablock ShapeBaseImageData(copperSwordImage)
 
 	correctMuzzleVector = false;
 
-	eyeOffset = "0.7 1.2 -0.25";
+	//eyeOffset = "0.7 1.2 -0.25";
+	eyeOffset = "0 0 0";
 
 	className = "WeaponImage";
 
@@ -225,11 +256,11 @@ datablock ShapeBaseImageData(copperSwordImage)
 
 	stateName[5] = "StopFire";
 	stateTransitionOnTimeout[5] = "Ready";
-	stateTimeoutValue[5]= 0.2;
-	stateAllowImageChange[5]= false;
+	stateTimeoutValue[5] = 0.2;
+	stateAllowImageChange[5] = false;
 	stateWaitForTimeout[5] = true;
-	stateSequence[5]= "StopFire";
-	stateScript[5]= "onStopFire";
+	stateSequence[5] = "StopFire";
+	stateScript[5] = "onStopFire";
 };
 
 function copperSwordImage::onPreFire(%this, %obj, %slot)
@@ -244,5 +275,117 @@ function copperSwordImage::onStopFire(%this, %obj, %slot)
 
 function copperSwordImage::onFire(%this, %obj, %slot)
 {
-	DoMeleeStrike(%obj, %slot, %this.projectile, 45, 5, 20);
+	DoMeleeStrike(%obj, %slot, %this.item.damage, %this.item.range, %this.item.mastery, %this.projectile);
+}
+
+// #4.
+
+//   #4.1
+
+datablock ItemData(blacksmithHammerItem)
+{
+	category = "Weapon";
+	className = "Weapon";
+
+	shapeFile = "base/data/shapes/Hammer.dts";
+	mass = 1;
+	density = 0.2;
+	elasticity = 0.2;
+	friction = 0.6;
+	emap = true;
+
+	uiName = "Blacksmith's Hammer";
+	iconName = "base/client/ui/itemIcons/Hammer";
+	doColorShift = true;
+	colorShiftColor = "0.23 0.21 0.18 1";
+
+	image = blacksmithHammerImage;
+	canDrop = true;
+
+	//dod stuff
+	dodItem = true;
+	//base stats
+	damage = 25;
+	range = 5;
+	mastery = 15; //cone angle
+	potential = 0;
+};
+
+datablock ShapeBaseImageData(blacksmithHammerImage)
+{
+	shapeFile = "base/data/shapes/Hammer.dts";
+	emap = true;
+
+	mountPoint = 0;
+	offset = "0 0 0";
+
+	correctMuzzleVector = false;
+
+	//eyeOffset = "0.7 1.2 -0.25";
+	eyeOffset = "0 0 0";
+
+	className = "WeaponImage";
+
+	item = blacksmithHammerItem;
+	ammo = " ";
+	projectile = hammerProjectile;
+	projectileType = Projectile;
+
+	melee = true;
+	doRetraction = false;
+	armReady = true;
+
+	doColorShift = true;
+	colorShiftColor = blacksmithHammerItem.colorShiftColor;
+
+	stateName[0] = "Activate";
+	stateTimeoutValue[0] = 0.5;
+	stateTransitionOnTimeout[0] = "Ready";
+	//stateSound[0] = swordDrawSound;
+
+	stateName[1] = "Ready";
+	stateTransitionOnTriggerDown[1] = "PreFire";
+	stateAllowImageChange[1] = true;
+
+	stateName[2] = "PreFire";
+	stateScript[2] = "onPreFire";
+	stateAllowImageChange[2] = false;
+	stateTimeoutValue[2] = 0.1;
+	stateTransitionOnTimeout[2] = "Fire";
+
+	stateName[3] = "Fire";
+	stateTransitionOnTimeout[3] = "CheckFire";
+	stateTimeoutValue[3] = 0.2;
+	stateFire[3] = true;
+	stateAllowImageChange[3] = false;
+	stateSequence[3] = "Fire";
+	stateScript[3] = "onFire";
+	stateWaitForTimeout[3] = true;
+
+	stateName[4] = "CheckFire";
+	stateTransitionOnTriggerUp[4]	= "StopFire";
+	stateTransitionOnTriggerDown[4] = "PreFire";
+
+	stateName[5] = "StopFire";
+	stateTransitionOnTimeout[5] = "Ready";
+	stateTimeoutValue[5] = 0.2;
+	stateAllowImageChange[5] = false;
+	stateWaitForTimeout[5] = true;
+	stateSequence[5] = "StopFire";
+};
+
+function blacksmithHammerImage::onPreFire(%this, %obj, %slot)
+{
+	%obj.playthread(2, armattack);
+	%obj.schedule(200, playThread, 2, root);
+}
+
+function blacksmithHammerImage::onStopFire(%this, %obj, %slot)
+{	
+	%obj.playthread(2, root);
+}
+
+function blacksmithHammerImage::onFire(%this, %obj, %slot)
+{
+	DoMeleeStrike(%obj, %slot, %this.item.damage, %this.item.range, %this.item.mastery, %this.projectile, hammerHitSound);
 }

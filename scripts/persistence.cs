@@ -27,6 +27,11 @@ function serverCmdCreateAccount(%client, %username, %password, %extra)
 		messageClient(%client, '', "\c0The username " @ %username @ " is taken. Please choose a different username.");
 		return;
 	}
+	if(isObject(%acc = %client.dodAccount))
+	{
+		%acc.save("config/server/dungonsopfdeth/" @ %acc.username @ ".cs");
+		%acc.delete();
+	}
 	%acc = new ScriptObject("dodAccount_" @ %username)
 	{
 		class = "dodAccount";
@@ -34,9 +39,14 @@ function serverCmdCreateAccount(%client, %username, %password, %extra)
 		password = %password;
 		lastUser = %client.getBLID();
 		dodTeam = %client.dodTeam;
+		damage = 35;
+		range = 35;
+		mastery = 30;
 	};
 	%acc.save("config/server/dungonsopfdeth/" @ %username @ ".cs");
+	%client.dodAccount = %acc;
 	messageClient(%client, '', "\c2Account successfully made with the username \c3" @ %username @ "\c2 and password \c3" @ %password @ "\c2.");
+	messageClient(%client, '', "\c2You can change your password with \c3/changePassword newPassword\c2.");
 }
 
 // #1.2
@@ -53,9 +63,14 @@ function serverCmdLogin(%client, %username, %password, %extra)
 		messageClient(%client, '', "\c0There does not seem to be an account with the username " @ %username @ ".");
 		return;
 	}
+	%acc = "dodAccount_" @ %username;
+	if(isObject("dodAccount_" @ %username))
+	{
+		messageClient(%client, '', "\c0You cannot login to an account that someone is currently using.");
+		return;
+	}
 	//load the file to check the password
 	exec(%file);
-	%acc = "dodAccount_" @ %username;
 	if(!isObject(%acc))
 	{
 		error("dod: Account " @ %username @ " has file, but load failed.");
@@ -71,13 +86,12 @@ function serverCmdLogin(%client, %username, %password, %extra)
 	}
 	else
 	{
-		if(isObject("dodAccount_" @ %username))
-		{
-			messageClient(%client, '', "\c0You cannot login to an account that someone is currently using.");
-			return;
-		}
 		//save old account
-		%client.dodAccount.save("config/server/dungonsopfdeth/" @ %client.dodAccount.username @ ".cs");
+		if(isObject(%client.dodAccount))
+		{
+			%client.dodAccount.save("config/server/dungonsopfdeth/" @ %client.dodAccount.username @ ".cs");
+			%client.dodAccount.delete();
+		}
 		//move to new account
 		%client.dodAccount = %acc;
 		%acc.lastUser = %client.getBLID();
@@ -92,18 +106,23 @@ function serverCmdLogin(%client, %username, %password, %extra)
 // #1.3
 function serverCmdAccount(%client)
 {
-	messageClient(%client, '', "\c3You are currently logged into the account \c3" @ %client.dodAccount.username @ "\c2.");
+	messageClient(%client, '', "\c2You are currently logged into the account \c3" @ %client.dodAccount.username @ "\c2.");
 }
 
 // #1.4
 function serverCmdLogout(%client)
 {
-	messageClient(%client, '', "To log out, simply leave the server. If you want to switch accounts, just log in to the other account.");
+	messageClient(%client, '', "\c0To log out, simply leave the server. If you want to switch accounts, just log in to the other account.");
 }
 
 // #1.5
-function serverCmdChangePassword(%client, %newpass)
+function serverCmdChangePassword(%client, %newpass, %extra)
 {
+	if(strLen(%newPass) == 0 || strLen(%extra) != 0)
+	{
+		messageClient(%client, '', "\c0Your new password must be one word (\c3/changePassword newPassword\c0).");
+		return;
+	}
 	%client.dodAccount.password = %newpass;
 	messageClient(%client, '', "\c2Your account's password has been changed to \c3" @ %newpass @ "\c2.");
 }
@@ -128,6 +147,11 @@ function serverCmdDeleteAccount(%client, %username, %password)
 	}
 	//load the file to check the password
 	%file = "config/server/dungonsopfdeth/" @ %username @ ".cs";
+	if(!isFile(%file))
+	{
+		messageClient(%client, '', "\c0There does not seem to be an account with the username " @ %username @ ".");
+		return;
+	}
 	exec(%file);
 	%acc = "dodAccount_" @ %username;
 	if(!isObject(%acc))
@@ -147,16 +171,17 @@ function serverCmdDeleteAccount(%client, %username, %password)
 	{
 		%acc.delete();
 		fileDelete(%file);
+		messageClient(%client, '', "\c2Account with the username \c3" @ %username @ "\c2 deleted successfully.");
 	}
 }
 
 // #2.
-// #2.1
-package dodPeristence
+package dodPersistence
 {
-	function GameConnection::AutoAdminCheck(%client)
+	// #2.1
+	function GameConnection::autoAdminCheck(%client)
 	{
-		%p = parent::AutoAdminChecl(%client);
+		%p = parent::autoAdminCheck(%client);
 		%name = %client.getPlayerName();
 		%file = "config/server/dungonsopfdeth/" @ %name @ ".cs";
 		if(isFile(%file))
@@ -165,13 +190,22 @@ package dodPeristence
 			%acc = "dodAccount_" @ %name;
 			%password = %acc.password;
 			%acc.delete();
-			schedule(0, serverCmdLogin, %client, %client.getPlayerName(), %password);
+			schedule(1, 0, serverCmdLogin, %client, %client.getPlayerName(), %password);
 		}
 		else
 		{
-			schedule(0, serverCmdCreateAccount, %name, %client.getBLID());
+			schedule(1, 0, serverCmdCreateAccount, %client, %name, %client.getBLID());
 		}
 		return %p;
+	}
+
+	// #2.2
+	function GameConnection::onDrop(%client)
+	{
+		%acc = %client.dodAccount;
+		%acc.save("config/server/dungonsopfdeth/" @ %acc.username @ ".cs");
+		%acc.delete();
+		return parent::onDrop(%client);
 	}
 };
 

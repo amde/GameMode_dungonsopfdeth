@@ -7,6 +7,8 @@
 
 // #1.0
 
+exec("./scripts/help.cs");
+
 //support functions
 exec("./scripts/geometry.cs");
 
