@@ -23,3 +23,6 @@ exec("./scripts/melee.cs");
 exec("./scripts/magic_tokens.cs");
 exec("./scripts/magic_effects.cs");
 exec("./scripts/magic_casting.cs");
+
+//enemies
+exec("./scripts/enemies.cs");

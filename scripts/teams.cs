@@ -50,7 +50,7 @@ function serverCmdJoinTeam(%client, %team)
 		%foundteam = false;
 		for(%i = -1; %i < $dod::Teams; %i++)
 		{
-			if(strPos($dod::Team[%i], %team) != -1)
+			if(striPos($dod::Team[%i], %team) != -1)
 			{
 				%foundteam = true;
 				break;
@@ -217,7 +217,7 @@ function serverCmdTeamMessageSent(%client, %message)
 		%c = clientGroup.getObject(%i);
 		if(%c.dodTeam == %client.dodTeam)
 		{
-			messageClient(%client, '', $dod::TeamColor[%client.dodTeam] @ "[TEAM]\c7" @ %client.clanPrefix @ $dod::TeamColor[%client.dodTeam] @ %client.getPlayerName() @ "\c7" @ %client.clanSuffix @ "<color:FFFFFF>:" @ %message);
+			messageClient(%c, '', $dod::TeamColor[%client.dodTeam] @ "[TEAM]\c7" @ %client.clanPrefix @ $dod::TeamColor[%client.dodTeam] @ %client.getPlayerName() @ "\c7" @ %client.clanSuffix @ "<color:FFFFFF>:" @ %message);
 		}
 	}
 }

@@ -74,6 +74,7 @@ activatePackage(Magicks_Casting);
 //	#2.1
 function Shadowflame(%caster)
 {
+	%acc = %caster.client.dodAccount;
 	%caster.mountImage(ShadowflameBreathImage, 0);
 	%caster.schedule(2000, unmountImage, ShadowflameBreathImage);
 	for(%i = 1; %i <= 4; %i++)
@@ -117,6 +118,7 @@ function Shadowflame_Tick(%obj, %sObj, %remain)
 // #2.2
 function ArcaneBarrage(%caster)
 {
+	%acc = %caster.client.dodAccount;
 	%pos = %caster.getEyePoint();
 	%vel = vectorScale(%caster.getEyeVector(), 150);
 	new Projectile()
@@ -140,6 +142,7 @@ function ArcaneBarrage(%caster)
 
 function ArcaneBlast(%caster)
 {
+	%acc = %caster.client.dodAccount;
 	%list = conalRaycastM(%caster.getEyePoint(), %caster.getEyeVector(), 32, 15, $Typemasks::PlayerObjectType, %caster);
 	for(%col = firstWord(%list); isObject(%col); %col = getWord(%list, %i++))
 	{
@@ -166,6 +169,7 @@ function Player::ABstackDec(%obj)
 
 function ArcaneMissiles(%caster)
 {
+	%acc = %caster.client.dodAccount;
 	%pos = %caster.getEyePoint();
 	%end = vectorAdd(%pos, vectorScale(%caster.getEyeVector(), 300));
 	%types = $Typemasks::PlayerObjectType | $Typemasks::VehicleObjectType | $Typemasks::InteriorObjectType | $Typemasks::TerrainObjectType | $TypeMasks::FxBrickObjectType;
@@ -200,6 +204,7 @@ function ArcaneMissiles(%caster)
 }
 function ArcaneMissileProjectileA::Home(%this, %p, %d)
 {
+	%acc = %caster.client.dodAccount;
 	if(!isObject(%p))
 	{
 		return;
@@ -226,6 +231,7 @@ function ArcaneMissileProjectileA::Home(%this, %p, %d)
 }
 function ArcaneMissileProjectileA::Home2(%this, %p)
 {
+	%acc = %caster.client.dodAccount;
 	%obj = %p.sourceObject;
 	if(!isObject(%p) || !isObject(%obj))
 	{
@@ -271,6 +277,7 @@ function ArcaneMissileProjectileA::Home2(%this, %p)
 
 function TwilightBolt(%caster)
 {
+	%acc = %caster.client.dodAccount;
 	%pos = %caster.getEyePoint();
 	%vel = vectorScale(%caster.getEyeVector(), 140);
 	new Projectile()
@@ -288,6 +295,7 @@ function TwilightBolt(%caster)
 
 function BurningTwilight(%caster) //not done
 {
+	%acc = %caster.client.dodAccount;
 	%pos = %caster.getEyePoint();
 	%vel = vectorScale(%caster.getEyeVector(), 140);
 	new Projectile()
@@ -306,6 +314,7 @@ function BurningTwilight(%caster) //not done
 
 function TwilightBarrage(%caster)
 {
+	%acc = %caster.client.dodAccount;
 	%pos = %caster.getEyePoint();
 	%eyeVec = %caster.getEyeVector();
 	%add[0] = vectorScale(vectorNormalize(getRandom()-0.5 SPC getRandom()-0.5 SPC getRandom()-0.5), 0.1);
@@ -332,6 +341,7 @@ function TwilightBarrage(%caster)
 
 function Blink(%caster)
 {
+	%acc = %caster.client.dodAccount;
 	%p = new Projectile()
 	{
 		datablock = ArcaneBarrageProjectileA;
@@ -362,6 +372,7 @@ function Blink(%caster)
 
 function StoneShield(%caster)
 {
+	%acc = %caster.client.dodAccount;
 	%start = %caster.getEyePoint();
 	%end = vectorAdd(%start, vectorScale(%caster.getEyeVector(), 12));
 	%types = $Typemasks::PlayerObjectType | $Typemasks::VehicleObjectType | $Typemasks::InteriorObjectType | $Typemasks::TerrainObjectType | $TypeMasks::FxBrickObjectType;
@@ -424,6 +435,7 @@ function StoneShield(%caster)
 
 function Mudball(%caster)
 {
+	%acc = %caster.client.dodAccount;
 	%pos = %caster.getEyePoint();
 	%vel = vectorScale(%caster.getEyeVector(), 50);
 	new Projectile()
@@ -442,8 +454,9 @@ function Mudball(%caster)
 
 function Disruption(%caster)
 {
+	%acc = %caster.client.dodAccount;
 	%pos = %caster.getEyePoint();
-	%vel = vectorScale(%caster.getEyeVector(), 25);
+	%vel = vectorScale(%caster.getEyeVector(), 25 * (1 + %acc.range / 100));
 	%p = new Projectile()
 	{
 		datablock = MudProjectile;
@@ -454,6 +467,7 @@ function Disruption(%caster)
 		scale = "1.5 1.5 1.5";
 		huge = true;
 		tiny = false;
+		damageMult = (1 + %acc.damage / 100);
 	};
 	%p.schedule(1000, explode);
 }
@@ -462,6 +476,7 @@ function Disruption(%caster)
 
 function SpiritBomb(%caster)
 {
+	%acc = %caster.client.dodAccount;
 	%pos = vectorAdd(%caster.getEyePoint(), %caster.getEyeVector());
 	%vel = vectorScale(%caster.getEyeVector(), 15);
 	%p = new Projectile()

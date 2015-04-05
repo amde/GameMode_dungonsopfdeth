@@ -940,7 +940,7 @@ datablock ProjectileData(spiritBombProjectile)
 
 function spiritBombProjectile::onCollision(%this, %obj, %col, %fade, %pos, %normal)
 {
-	if(minigameCanDamage(%obj.sourceObject, %hit))
+	if(minigameCanDamage(%obj.sourceObject, %hit) && %hit.getType() & $Typemasks::PlayerObjectType)
 	{
 		%hit.schedule(500, damage, %obj.sourceObject, %pos, %obj.damage, $DamageType::Direct);
 	}
