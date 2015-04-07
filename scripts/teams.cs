@@ -60,28 +60,24 @@ function serverCmdJoinTeam(%client, %team)
 		{
 			%i = -1;
 		}
-		if(%i != %client.dodTeam)
+		%acc = %client.dodAccount;
+		if(%i != %acc.dodTeam)
 		{
-			if(%client.dodTeam $= "")
-			{
-				%client.dodTeam = -1;
-			}
-			messageAll('', $dod::TeamColor[%client.dodTeam] @ %client.name @ "\c7 has joined the " @ $dod::TeamColor[%i] @ $dod::Team[%i] @ "\c7 team.");
-			%client.dodTeam = %i;
-			%client.dodAccount.dodTeam = %i;
+			messageAll('', $dod::TeamColor[%acc.dodTeam] @ %client.name @ "\c7 has joined the " @ $dod::TeamColor[%i] @ $dod::Team[%i] @ "\c7 team.");
+			%acc.dodTeam = %i;
 			if(isObject(%client.player))
 			{
-				%client.player.setShapeNameColor($dod::TeamColorScript[%client.dodTeam]);
+				%client.player.setShapeNameColor($dod::TeamColorScript[%acc.dodTeam]);
 			}
 		}
 		else
 		{
-			messageClient(%client, '', "\c0You're already on the " @ $dod::TeamColor[%i] @ $dodTeam[%i] @ "\c0 team.");
+			messageClient(%client, 'MsgError', "\c0You're already on the " @ $dod::TeamColor[%i] @ $dodTeam[%i] @ "\c0 team.");
 		}
 	}
 	else
 	{
-		messageClient(%client, '', "\c0Not while you're in combat!");
+		messageClient(%client, 'MsgError', "\c0Not while you're in combat!");
 	}
 }
 
@@ -93,7 +89,7 @@ function serverCmdLeaveTeam(%client)
 // #2.2
 function serverCmdEnablePvp(%client)
 {
-	messageAll('', $dod::TeamColor[%client.dodTeam] @ %client.name @ "\c7 has enabled PvP!");
+	messageAll('', $dod::TeamColor[%client.dodAccount.dodTeam] @ %client.name @ "\c7 has enabled PvP!");
 	%client.pvp = true;
 }
 
@@ -101,12 +97,12 @@ function serverCmdDisablePvp(%client)
 {
 	if(!%client.player.inCombat)
 	{
-		messageAll('', $dod::TeamColor[%client.dodTeam] @ %client.name @ "\c7 has disabled PvP!");
+		messageAll('', $dod::TeamColor[%client.dodAccount.dodTeam] @ %client.name @ "\c7 has disabled PvP!");
 		%client.pvp = false;
 	}
 	else
 	{
-		messageClient(%client, '', "\c0Not while you're in combat!");
+		messageClient(%client, 'MsgError', "\c0Not while you're in combat!");
 	}
 }
 
@@ -137,62 +133,14 @@ package dodTeams
 	function GameConnection::SpawnPlayer(%client)
 	{
 		%p = parent::SpawnPlayer(%client);
-		%client.player.setShapeNameColor($dod::TeamColorScript[%client.dodTeam]);
+		%client.player.setShapeNameColor($dod::TeamColorScript[%client.dodAccount.dodTeam]);
 		return %p;
 	}
 
 	// #3.3
 	function minigameCanDamage(%a, %b)
 	{
-		%p = parent::minigameCanDamage(%a, %b);
-		if(!%p)
-		{
-			//resolve %a and %b to clients if possible
-			if(%a.getClassName() $= "GameConnection")
-			{
-			}
-			else if(%a.getClassName() $= "Player")
-			{
-				if(isObject(%a.client))
-				{
-					%a = %a.client;
-				}
-				else
-				{
-					return %p;
-				}
-			}
-			else
-			{
-				return %p;
-			}
-			if(%b.getClassName() $= "GameConnection")
-			{
-			}
-			else if(%b.getClassName() $= "Player")
-			{
-				if(isObject(%b.client))
-				{
-					%b = %b.client;
-				}
-				else
-				{
-					return %p;
-				}
-			}
-			else
-			{
-				return %p;
-			}
-			if( (%a.dodTeam != %b.dodTeam || %a.dodTeam == -1 || %b.dodTeam == -1 || %a == %b) && %a.pvp && %b.pvp)
-			{
-				return true;
-			}
-		}
-		else
-		{
-			return %p;
-		}
+		return parent::minigameCanDamage(%a, %b);
 	}
 };
 activatePackage(dodTeams);
@@ -201,7 +149,7 @@ activatePackage(dodTeams);
 // #4.1
 function serverCmdMessageSent(%client, %message)
 {
-	messageAll('', "\c7" @ %client.clanPrefix @ $dod::TeamColor[%client.dodteam] @ %client.name @ "\c7" @ %client.clanSuffix @ "<color:ffffff>: " @ %message);
+	messageAll('chatMessage', "\c7" @ %client.clanPrefix @ $dod::TeamColor[%client.dodAccount.dodteam] @ %client.name @ "\c7" @ %client.clanSuffix @ "<color:ffffff>: " @ %message);
 }
 
 // #4.2
@@ -209,15 +157,15 @@ function serverCmdTeamMessageSent(%client, %message)
 {
 	if(%client.dodTeam == -1)
 	{
-		messageClient(%client, '', "\c0You can't use team chat while you're on the White team!");
+		messageClient(%client, 'MsgError', "\c0You can't use team chat while you're on the White team!");
 		return;
 	}
 	for(%i = 0; %i < clientGroup.getCount(); %i++)
 	{
 		%c = clientGroup.getObject(%i);
-		if(%c.dodTeam == %client.dodTeam)
+		if(%c.dodAccount.dodTeam == %client.dodAccount.dodTeam)
 		{
-			messageClient(%c, '', $dod::TeamColor[%client.dodTeam] @ "[TEAM]\c7" @ %client.clanPrefix @ $dod::TeamColor[%client.dodTeam] @ %client.getPlayerName() @ "\c7" @ %client.clanSuffix @ "<color:FFFFFF>:" @ %message);
+			messageClient(%c, 'chatMessage', $dod::TeamColor[%client.dodAccount.dodTeam] @ "[TEAM]\c7" @ %client.clanPrefix @ $dod::TeamColor[%client.dodAccount.dodTeam] @ %client.getPlayerName() @ "\c7" @ %client.clanSuffix @ "<color:FFFFFF>:" @ %message);
 		}
 	}
 }

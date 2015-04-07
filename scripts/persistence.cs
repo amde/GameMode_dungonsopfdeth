@@ -38,7 +38,7 @@ function serverCmdCreateAccount(%client, %username, %password, %extra)
 		username = %username;
 		password = %password;
 		lastUser = %client.getBLID();
-		dodTeam = %client.dodTeam;
+		dodTeam = -1;
 		damage = 35;
 		range = 35;
 		mastery = 30;
@@ -95,10 +95,6 @@ function serverCmdLogin(%client, %username, %password, %extra)
 		//move to new account
 		%client.dodAccount = %acc;
 		%acc.lastUser = %client.getBLID();
-		if(%acc.dodTeam != %client.dodTeam)
-		{
-			serverCmdJoinTeam(%client, $dod::Team[%acc.dodTeam]);
-		}
 		messageClient(%client, '', "\c2Successfully logged into account \c3" @ %username @ "\c2.");
 	}
 }

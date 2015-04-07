@@ -12,6 +12,7 @@
 //   #2.2 twilight
 //   #2.3 mud
 //   #2.4 spirit bom
+//   #2.5 shadow bolt
 
 
 // #1.0
@@ -943,5 +944,95 @@ function spiritBombProjectile::onCollision(%this, %obj, %col, %fade, %pos, %norm
 	if(minigameCanDamage(%obj.sourceObject, %hit) && %hit.getType() & $Typemasks::PlayerObjectType)
 	{
 		%hit.schedule(500, damage, %obj.sourceObject, %pos, %obj.damage, $DamageType::Direct);
+	}
+}
+
+// #2.5
+
+datablock ParticleData(DarkBlindParticle)
+{
+	dragCoefficient = 1;
+	windCoefficient = 0;
+	gravityCoefficient = 0;
+	inheritedVelFactor = 1;
+	constantAcceleration = 0;
+	lifetimeMS = 115;
+	lifetimeVarianceMS = 15;
+	textureName = "base/data/particles/dot";
+	spinSpeed = 0;
+	spinRandomMin = -100;
+	spinRandomMax = 100;
+	useInvAlpha = true;
+
+	colors[0] = "0 0 0 1";
+	colors[1] = "0.1 0 0.05 0";
+	sizes[0] = 1.5;
+	sizes[1] = 1;
+};
+datablock ParticleEmitterData(DarkBlindEmitter)
+{
+	ejectionPeriodMS = 1;
+	periodVarianceMS = 0;
+	ejectionVelocity = 3;
+	velocityVariance = 2.5;
+	ejectionOffset = 0.3;
+	thetaMin = 0;
+	thetaMax = 180;
+	phiReferenceVel = 0;
+	phiVariance = 360;
+	overrideAdvance = false;
+	particles = DarkBlindParticle;
+};
+
+datablock ShapeBaseImageData(DarkBlindPlayerImage)
+{
+	shapeFile = "base/data/shapes/empty.dts";
+	emap = true;
+
+	mountPoint = $Headslot;
+	offset = "0 0 0";
+	eyeOffset = 0;
+	rotation = "0 0 0";
+
+	correctMuzzleVector = true;
+
+	className = "WeaponImage";
+
+	item = "";
+	ammo = " ";
+	projectile = "";
+	projectileType = Projectile;
+
+	melee = false;
+	armReady = false;
+
+	doColorShift = false;
+	colorShiftColor = "1 1 1 1";
+
+	stateName[0] = "Wait";
+	stateTimeoutValue[0] = 5;
+	stateEmitter[0] = DarkBlindEmitter;
+	stateEmitterTime[0] = 5000;
+	stateEmitterTime[0] = 5;
+	stateTransitionOnTimeout[0] = "Dismount";
+
+	stateName[1] = "Dismount";
+	stateScript[1] = "Dismount";
+};
+
+function DarkBlindPlayerImage::onMount(%this, %obj, %slot)
+{
+	%obj.oldDatablock = %obj.getDatablock();
+	//%obj.setDatablock(PlayerFPmageArmor);
+	serverPlay3d(DarkBlindSound, %obj.getEyePoint());
+	parent::onMount(%this, %obj, %slot);
+}
+
+function DarkBlindPlayerImage::Dismount(%this, %obj, %slot)
+{
+	%obj.unmountImage(%slot);
+	if(%obj.oldDatablock != PlayerFPmageArmor.getID())
+	{
+		%obj.setDatablock(%obj.oldDatablock);
 	}
 }

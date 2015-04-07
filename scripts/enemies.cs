@@ -42,7 +42,7 @@ function AIPlayer::dodAI_Init(%this, %canmove, %sightRange, %wRanged, %wMelee, %
 
 function AIPlayer::dodAI_InitDefault(%this)
 {
-	%this.dodAI_Init(true, 80, bowImage, swordImage, getRandom(0, 2));
+	%this.dodAI_Init(true, 80, ashBowImage, copperSwordImage, getRandom(0, 2));
 }
 
 // #1.2
@@ -211,7 +211,7 @@ function AIPlayer::dodAI_Sched(%this)
 				{
 					if(dodAI_call("ShouldAttack", %this, %hit))
 					{
-						//OnBotDetectEnemy(%this, %hit);
+						dodAI_call("OnDetectEnemy", %this, %hit);
 						if(!%haveenemy)
 						{
 							%this.target = %hit;
@@ -220,7 +220,7 @@ function AIPlayer::dodAI_Sched(%this)
 								%this.setMoveObject(%hit);
 							}
 							%this.setAimObject(%hit);
-							//OnBotChaseTarget(%this, %hit);
+							dodAI_call("OnChase", %this, %hit);
 							%haveenemy = true;
 						}
 					}
@@ -325,11 +325,7 @@ function dodAI_Default_CanSee(%bot, %target)
 		}
 		else //Has to be a brick
 		{
-			if(!%hit.isRendering())
-			{
-				return true;
-			}
-			if(getWord(getColorIDtable(%hit.colorID), 3) < 1)
+			if(!%hit.isRendering() || getWord(getColorIDtable(%hit.colorID), 3) < 1)
 			{
 				return true;
 			}
@@ -349,15 +345,19 @@ function dodAI_Default_CanSee(%bot, %target)
 		}
 		else
 		{
-			if(!%hit.isRendering())
-			{
-				return true;
-			}
-			if(getWord(getColorIDtable(%hit.colorID), 3) < 1)
+			if(!%hit.isRendering() || getWord(getColorIDtable(%hit.colorID), 3) < 1)
 			{
 				return true;
 			}
 		}
 	}
 	return false;
+}
+
+function dodAI_Default_OnDetectEnemy(%bot, %target)
+{
+}
+
+function dodAI_Default_onChase(%bot, %target)
+{
 }

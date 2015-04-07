@@ -42,7 +42,7 @@ package Magicks_Casting
 								%result = call(%fn, %obj);
 								if(%result != 1)
 								{
-									%obj.setEnergyLevel(%lev - %manaCost);
+									%obj.setEnergyLevel(%mana - %manaCost);
 									%client.clearTokens = 1;
 									%obj.GCD = getSimTime() + 1000;
 								}

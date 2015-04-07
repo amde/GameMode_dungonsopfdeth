@@ -15,9 +15,9 @@ function DoMeleeStrike(%obj, %slot, %angle, %range, %damage, %proj, %sound)
 {
 	if(isObject(%acc = %obj.client.dodAccount))
 	{
-		%angle *= (1 + %acc.mastery / 100);
-		%range *= (1 + %acc.range / 100);
-		%damage *= (1 + %acc.damage / 100);
+		%angle *= getMasteryMultiplier(%obj);
+		%range *= getRangeMultiplier(%obj);
+		%damage *= getDamageMultiplier(%obj);
 	}
 	%scale = getWord(%obj.getScale(), 2);
 	%start = %obj.getEyePoint();
