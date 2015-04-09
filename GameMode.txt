@@ -1,4 +1,6 @@
-// stores settings to automatically load for the gamemode, including addons
+// stores settings to automatically load for the gamemode
+
+//addons
 ADDON Brick_18Degree
 ADDON Brick_Arch
 ADDON Brick_InvertedCorners
@@ -26,13 +28,14 @@ ADDON Print_2x2f_Default
 ADDON Print_2x2r_Default
 ADDON Print_Letters_Default
 ADDON Projectile_Pong
-ADDON Script_TechEval_IV
 ADDON Tool_Duplicator
 ADDON Tool_Fill_Can
-ADDON Tool_SwissArmyGun
 ADDON Vehicle_Horse
 ADDON Vehicle_Magic_Carpet
 ADDON Vehicle_Rowboat
+
+ADDON Script_TechEval_IV
+ADDON Tool_SwissArmyGun
 
 //environment
 $EnvGuiServer::SimpleMode 1
@@ -41,7 +44,21 @@ $EnvGuiServer::WaterFile None
 $EnvGuiServer::GroundFile Add-Ons/Ground_Plate/plate.ground
 
 //minigame settings
-$MiniGame::Enabled 0
+$MiniGame::Enabled 1
+$MiniGame::GameColor 0
+$MiniGame::InviteOnly 0
+$MiniGame::IncludeAllPlayersBricks 1
+$MiniGame::Points_Die 0
+$MiniGame::RespawnTime 10
+$MiniGame::FallingDamage 1
+$MiniGame::SelfDamage 1
+$MiniGame::WeaponDamage 1
+$MiniGame::BrickDamage 0
+$MiniGame::EnableBuilding 1
+$MiniGame::EnablePainting 1
+
+$MiniGame::PlayerDatablockName player... opf deth...
+//default equipment handled by scripts
 
 //config settings
 $Server::WelcomeMessage \c2Welcome, %1, to the dungons... opf deth...

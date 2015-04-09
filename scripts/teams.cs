@@ -8,16 +8,15 @@
 //   #2.1 server commands for joining/leaving a team
 //   #2.2 server commands for enabling/disabling pvp
 // #3. dodTeams package
-//   #3.1 gameConnection::autoAdminCheck
-//	#3.2 gameConnection::spawnPlayer
-//   #3.3 minigameCanDamage
+//	#3.1 gameConnection::spawnPlayer
+//   #3.2 minigameCanDamage
 // #4. function overwrites
 //   #4.1 serverCmdMessageSent
 //   #4.2 serverCmdTeamMessageSent
 
 
 // #1.0
-$dod::Teams = 6;
+$dod::Teams = 7;
 $dod::Team[-1]="White";
 $dod::TeamColor[-1]="<color:B0B0B0>";
 $dod::TeamColorScript[-1]="0.7 0.7 0.7";
@@ -39,6 +38,9 @@ $dod::TeamColorScript[4]="1 0 1";
 $dod::Team[5]="Cyan";
 $dod::TeamColor[5]="<color:00FFFF>";
 $dod::TeamColorScript[5]="0 1 1";
+$dod::Team[6]="Black";
+$dod::TeamColor[6]="<color:333333>";
+$dod::TeamColorScript[6]="0.2 0.2 0.2";
 
 // #2.
 
@@ -121,23 +123,16 @@ function serverCmdTogglePvp(%client)
 // #3.0
 package dodTeams
 {
-	// #3.1
-	//function GameConnection::AutoAdminCheck(%client)
-	//{
-		//%p = parent::AutoAdminCheck(%client);
-		//serverCmdJoinTeam(%client, "White");
-		//return %p;
-	//}
 
-	// #3.2
+	// #3.1
 	function GameConnection::SpawnPlayer(%client)
 	{
 		%p = parent::SpawnPlayer(%client);
-		%client.player.setShapeNameColor($dod::TeamColorScript[%client.dodAccount.dodTeam]);
+		%client.player.schedule(0, setShapeNameColor, $dod::TeamColorScript[%client.dodAccount.dodTeam]);
 		return %p;
 	}
 
-	// #3.3
+	// #3.2
 	function minigameCanDamage(%a, %b)
 	{
 		return parent::minigameCanDamage(%a, %b);

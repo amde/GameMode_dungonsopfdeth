@@ -38,7 +38,7 @@ function DoMeleeStrike(%obj, %slot, %angle, %range, %damage, %proj, %sound)
 			%hitcount++;
 		}
 	}
-	if(%hitcount < 1)
+	if(%hitcount == 0)
 	{
 		%typemasks = $Typemasks::VehicleObjectType | $Typemasks::TerrainObjectType | $Typemasks::FXbrickObjectType | $TypeMasks::StaticShapeObjectType;
 		%end = vectorAdd(%start, vectorScale(%obj.getMuzzleVector(%slot), %range * %scale));
@@ -191,17 +191,12 @@ datablock ItemData(copperSwordItem)
 	canDrop = true;
 
 	//dod stuff
-	dodItem = true;
-	//base stats
-	damage = 15;
-	range = 5;
-	mastery = 15; //cone angle
-	potential = 0;
+	dodItem = dodItem_CopperSword;
 };
 
 datablock ShapeBaseImageData(copperSwordImage)
 {
-	shapeFile = "Add-Ons/Weapon_Sword/sword.dts";
+	shapeFile = copperSwordItem.shapeFile;
 	emap = true;
 
 	mountPoint = 0;
@@ -215,6 +210,7 @@ datablock ShapeBaseImageData(copperSwordImage)
 	className = "WeaponImage";
 
 	item = copperSwordItem;
+	dodItem = copperSwordItem.dodItem;
 	ammo = " ";
 	projectile = swordProjectile;
 	projectileType = Projectile;
@@ -275,7 +271,7 @@ function copperSwordImage::onStopFire(%this, %obj, %slot)
 
 function copperSwordImage::onFire(%this, %obj, %slot)
 {
-	DoMeleeStrike(%obj, %slot, %this.item.damage, %this.item.range, %this.item.mastery, %this.projectile);
+	DoMeleeStrike(%obj, %slot, %this.item.dodItem.damage, %this.item.dodItem.range, %this.item.dodItem.mastery, %this.projectile);
 }
 
 // #4.
@@ -303,12 +299,7 @@ datablock ItemData(blacksmithHammerItem)
 	canDrop = true;
 
 	//dod stuff
-	dodItem = true;
-	//base stats
-	damage = 25;
-	range = 5;
-	mastery = 15; //cone angle
-	potential = 0;
+	dodItem = dodItem_BlacksmithHammer;
 };
 
 datablock ShapeBaseImageData(blacksmithHammerImage)
@@ -327,6 +318,7 @@ datablock ShapeBaseImageData(blacksmithHammerImage)
 	className = "WeaponImage";
 
 	item = blacksmithHammerItem;
+	dodItem = blacksmithHammerItem.dodItem;
 	ammo = " ";
 	projectile = hammerProjectile;
 	projectileType = Projectile;
@@ -387,5 +379,5 @@ function blacksmithHammerImage::onStopFire(%this, %obj, %slot)
 
 function blacksmithHammerImage::onFire(%this, %obj, %slot)
 {
-	DoMeleeStrike(%obj, %slot, %this.item.damage, %this.item.range, %this.item.mastery, %this.projectile, hammerHitSound);
+	DoMeleeStrike(%obj, %slot, %this.item.dodItem.damage, %this.item.dodItem.range, %this.item.dodItem.mastery, %this.projectile, hammerHitSound);
 }

@@ -12,13 +12,23 @@ function Player::Blind(%this, %dur, %dr)
 			%this.BlindDR++;
 			%this.schedule(15000 + %dur, BlindDRdec);
 		}
+		%this.blinded = true;
 		%this.mountImage(DarkBlindPlayerImage, 1);
-		%this.schedule(%dur, endBlind);
+		if(isEventPending(%this.unblindSched))
+		{
+			cancel(%this.unblindSched);
+		}
+		%this.unblindSched = %this.schedule(%dur, unblind);
 	}
 }
 
-function Player::EndBlind(%this)
+function Player::Unblind(%this)
 {
+	if(isEventPending(%this.unblindSched))
+	{
+		cancel(%this.unblindSched);
+	}
+	%this.blinded = false;
 	if(%this.getMountedImage(1) == nameToID(DarkBlindPlayerImage))
 	{
 		%this.unmountImage(1);
@@ -90,6 +100,7 @@ function Player::StunDRDec(%this)
 
 function Player::Unstun(%this)
 {
+	cancel(%this.unstunSched);
 	if(isObject(%client = %this.client) && %client.getControlObject() == %client.camera)
 	{
 		%client.setControlObject(%this);

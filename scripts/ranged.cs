@@ -209,16 +209,16 @@ datablock ProjectileData(arrowProjectile)
 	explodeOnPlayerImpact = true;
 	explodeOnDeath = true;  
 
-	armingDelay = 120000;
-	lifetime = 120000;
-	fadeDelay = 120000;
+	armingDelay = 60000;
+	lifetime = 60000;
+	fadeDelay = 60000;
 
 	isBallistic = true;
 	bounceAngle = 170;
 	minStickVelocity = 10;
 	bounceElasticity = 0.2;
 	bounceFriction = 0.01;   
-	gravityMod = 0.5;
+	gravityMod = 0.3;
 
 	hasLight = false;
 	lightRadius = 3.0;
@@ -299,14 +299,7 @@ datablock ItemData(ashBowItem)
 	canDrop = true;
 
 	//dod stuff
-	dodItem = true;
-	//base stats
-	damage = 25;
-	range = 40;
-	mastery = 0; //bonus projectile %
-
-	projectileCount = 1;
-	potential = 0;
+	dodItem = dodItem_AshBow;
 };
 
 datablock ShapeBaseImageData(ashBowImage)
@@ -324,6 +317,7 @@ datablock ShapeBaseImageData(ashBowImage)
 	className = "WeaponImage";
 
 	item = ashBowItem;
+	dodItem = ashBowItem.dodItem;
 	ammo = " ";
 	projectile = arrowProjectile;
 	projectileType = Projectile;
@@ -374,5 +368,5 @@ datablock ShapeBaseImageData(ashBowImage)
 
 function ashBowImage::onFire(%this, %obj, %slot)
 {
-	DoBowLoose(%obj, %slot, arrowProjectile, 40, 25, 1, 10);
+	DoBowLoose(%obj, %slot, %this.projectile, 25, 40, 1, 10);
 }

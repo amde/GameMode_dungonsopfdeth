@@ -114,12 +114,10 @@ function AIPlayer::dodAI_Sched(%this)
 					else if(%dist < %this.safeRange)
 					{
 						//too close: retreat
-						%this.setMoveObject(0);
-						%this.clearAim();
-						%run = vectorNormalize(vectorSub(setWord(%tlpos, 2, 0), setWord(%target.getPosition(), 2, 0)));
-						%run = vectorAdd(%tlpos, vectorScale(%run, 50));
-						%this.setMoveDestination(%run);
-						return;
+						if(dodAI_call("Retreat", %this, %target))
+						{
+							return;
+						}
 					}
 					else
 					{
@@ -360,4 +358,14 @@ function dodAI_Default_OnDetectEnemy(%bot, %target)
 
 function dodAI_Default_onChase(%bot, %target)
 {
+}
+
+function dodAI_Default_Retreat(%bot, %target)
+{
+	%this.setMoveObject(0);
+	%this.clearAim();
+	%run = vectorNormalize(vectorSub(setWord(%tlpos, 2, 0), setWord(%target.getPosition(), 2, 0)));
+	%run = vectorAdd(%tlpos, vectorScale(%run, 50));
+	%this.setMoveDestination(%run);
+	return true;
 }

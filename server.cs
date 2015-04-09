@@ -13,9 +13,6 @@ exec("./scripts/help.cs");
 //support functions
 exec("./scripts/geometry.cs");
 
-//rpg
-exec("./scripts/persistence.cs");
-
 //pseudo-minigame
 exec("./scripts/teams.cs");
 
@@ -27,6 +24,10 @@ exec("./scripts/magic_effects.cs");
 exec("./scripts/magic_casting.cs");
 exec("./scripts/statuseffects.cs");
 exec("./scripts/playerstats.cs");
+
+//rpg
+exec("./scripts/accounts.cs");
+exec("./scripts/items.cs");
 
 //enemies
 exec("./scripts/enemies.cs");
